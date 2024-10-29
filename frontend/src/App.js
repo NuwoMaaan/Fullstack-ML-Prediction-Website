@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PredictionPageTemp from './components/PredictionPageTemp';
 import PredictionPageDemand from './components/PredictionPageDemand';
+import PredictionPageCases from './components/PredictionPageFlu';
 import PredictionCards from './components/Cards';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import {
@@ -154,6 +155,7 @@ return (
     <Route path="/about" element={<About />} />
     <Route path="/predictTemp" element={<PredictionPageTemp />} />
     <Route path="/predictDemand" element={<PredictionPageDemand />} />
+    <Route path="/predictInfluenza" element={<PredictionPageCases />} />
 
 </Routes>
   
