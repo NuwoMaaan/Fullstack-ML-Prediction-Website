@@ -7,7 +7,7 @@ import TemperatureForm from './TemperatureForm';
 import TemperatureResult from './TemperatureResult';
 
 
-// Registering Chart.js components
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const theme = createTheme({
@@ -33,25 +33,26 @@ const PredictionPageTemp = () => {
         setLoading(true);
         
         try {
-            const response = await axios.get(`http://localhost:8000/predict/${year}/${month}/${day}`);
+            // Fetch min and max temp
+            const response = await axios.get(`http://localhost:8000/predict/temp/${year}/${month}/${day}`);
             const { min_temp, max_temp } = response.data;
             setPredictedTemp({ min: min_temp, max: max_temp });
 
-        
+            // Determine how many days in month
             const daysInMonth = new Date(year, month, 0).getDate();
             const days = [...Array(daysInMonth).keys()].map(i => i + 1);
 
-            // Fetch demand data using temperature predictions
+            // Fetch demand data using temperature predictions for each day of month
             const demandPredictions = await Promise.all(
                 days.map(day =>
-                    axios.get(`http://localhost:8000/predict/${min_temp}/${max_temp}/${year}/${month}/${day}`)
-                        .then(res => res.data.demand) // Assuming the response contains demand data
+                    axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`)
+                        .then(res => res.data.demand)
                 )
             );
-
+            // get prediction for each day of month
             const predictions = await Promise.all(
                 days.map(day =>
-                    axios.get(`http://localhost:8000/predict/${year}/${month}/${day}`)
+                    axios.get(`http://localhost:8000/predict/temp/${year}/${month}/${day}`)
                         .then(res => ({ min: res.data.min_temp, max: res.data.max_temp }))
                 )
             );
@@ -94,31 +95,20 @@ const PredictionPageTemp = () => {
                 ]
             };
             setChartData(newCharData);
-
-            // Prepare chart data for demand
             const demandChartData = {
                 labels: days,
                 datasets: [
                     {
                         label: 'Electricity Demand',
-                        data: demandPredictions, // Fill with the same demand value for simplicity
+                        data: demandPredictions, 
                         borderColor: 'rgb(100, 100, 250)',
                         backgroundColor: 'rgba(100, 100, 250, 0.5)',
                         tension: 0.1
                     },
-                    {
-                        label: 'Demand Prediction',
-                        data: demandPredictions.map((demand, idx) => ({ x: days[idx], y: demand })),
-                        borderColor: 'rgb(0, 255, 255)',
-                        backgroundColor: 'rgba(0, 255, 255, 0.5)',
-                        pointRadius: 8,
-                        pointHoverRadius: 12,
-                        showLine: false
-                    }
+                    
                 ]
             };
 
-            // Set demand chart data
             setChartData(prevData => ({
                 ...prevData,
                 demandData: demandChartData
@@ -132,6 +122,7 @@ const PredictionPageTemp = () => {
         }
     };
 
+    
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="md">

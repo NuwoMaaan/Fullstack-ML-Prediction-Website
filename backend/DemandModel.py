@@ -5,7 +5,6 @@ from sklearn.metrics import  r2_score, mean_absolute_error
 from sklearn.preprocessing import LabelEncoder
 import joblib
 
-# Load electricity_data
 electricity_data = pd.read_csv('./csvfiles/electricity_data.csv')
 
 class DemandModel():
@@ -14,7 +13,7 @@ class DemandModel():
         
     def train(self):
 
-        #Convert date to datetime
+       
         electricity_data['date'] = pd.to_datetime(electricity_data['date'], format='%Y-%m-%d')
 
         data = {
@@ -28,7 +27,6 @@ class DemandModel():
 
         demand_data = demand_data.copy()
 
-        #Create year,month,dayofyear columns from the date column
         demand_data.loc[:, 'Year'] = demand_data['date'].dt.year
         demand_data.loc[:, 'Month'] = demand_data['date'].dt.month
         demand_data.loc[:, 'DayOfYear'] = demand_data['date'].dt.dayofyear
@@ -37,10 +35,9 @@ class DemandModel():
         x = demand_data.drop(['demand','date'], axis=1)
         y = demand_data['demand']
 
-        #Create and train the model
         self.DemandModel.fit(x, y)
         prediction = self.DemandModel.predict(x)
-        #Evaluate the model using RMSE and R2 scores
+        
         RFr2 = r2_score(y, prediction)
         MAE = mean_absolute_error(y, prediction)
         print(f"R2: {RFr2}")
@@ -50,7 +47,6 @@ class DemandModel():
     
     def predict(self, min_temp, max_temp, Year, Month, Day):
         try:
-            # Load the models
             demand_model = joblib.load('./pklfiles/demandmodel.pkl')
     
             dayofyear = (pd.to_datetime(f"{Year}-{Month}-{Day}").dayofyear)
