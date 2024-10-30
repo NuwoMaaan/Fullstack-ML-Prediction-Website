@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from ModelTemp import TempModel
 from DemandModel import DemandModel
@@ -26,6 +26,13 @@ async def root():
 @app.get("/predict/{year}/{month}/{dayofyear}")
 async def predict_temp(year: int, month: int, dayofyear: int):
     # Get both min and max temperature predictions
+    if month < 1 or month > 12:
+        raise HTTPException(status_code=400, detail="Month must be between 1-12")
+    elif dayofyear < 1 or dayofyear > 31:
+        raise HTTPException(status_code=400, detail="Day must be between 1-31")
+    elif year < 1900 or year > 2099:
+        raise HTTPException(status_code=400, detail="Year must be between 1900 - 2099")
+
     min_temp = temp_model.predict(year, month, dayofyear)[0]  # Assuming it returns a list with min_temp
     max_temp = temp_model.predict(year, month, dayofyear)[1]  # Assuming it returns a list with max_temp
     return {"min_temp": min_temp, "max_temp": max_temp}  # Return both as JSON
