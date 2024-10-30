@@ -38,8 +38,14 @@ const PredictionPageDemand = () => {
             const { demand } = response.data; // Assuming the response contains demand data
             setPredictedDemand(demand);
 
-            const daysInMonth = new Date(year, month, 0).getDate();
-            const days = [...Array(daysInMonth).keys()].map(i => i + 1);
+            const noOfDaysToPredict = 14;
+            const startDate = new Date(year, month - 1, day);
+            const days = [...Array(noOfDaysToPredict).keys()].map(i => {
+                const nextDate = new Date(startDate);
+                nextDate.setDate(startDate.getDate() + i);
+                return nextDate.getDate();
+            });
+
 
             const predictions = await Promise.all(
                 days.map(day =>
@@ -72,8 +78,12 @@ const PredictionPageDemand = () => {
 
             setChartData(newChartData);
         } catch (err) {
-            setError('Error predicting electricity demand. Please try again.');
-            console.error(err);
+            if (err.response)
+                {
+                    setError(`Error: ${err.response.data.detail}`)
+                    console.error(err.response.data.detail);
+                }
+                console.error(err);
         } finally {
             setLoading(false);
         }
