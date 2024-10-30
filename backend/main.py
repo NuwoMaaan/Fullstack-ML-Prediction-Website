@@ -42,11 +42,28 @@ async def predict_temp(year: int, month: int, dayofyear: int):
 
 @app.get("/predict/demand/{min_temp}/{max_temp}/{year}/{month}/{dayofyear}")
 async def predict_demand(min_temp: float, max_temp: float, year: int, month: int, dayofyear: int):
+
+    if month < 1 or month > 12:
+        raise HTTPException(status_code=400, detail="Month must be between 1-12")
+    elif dayofyear < 1 or dayofyear > 31:
+        raise HTTPException(status_code=400, detail="Day must be between 1-31")
+    elif year < 1900 or year > 2099:
+        raise HTTPException(status_code=400, detail="Year must be between 1900 - 2099")
+    elif (min_temp < -10 or min_temp > 50):
+        raise HTTPException(status_code=400, detail="Max temperature must be between -10 and 50")
+    elif (max_temp < -10 or  max_temp > 50):
+        raise HTTPException(status_code=400, detail="Max temperature must be between -10 and 50")
+    
     demand = demand_model.predict(min_temp,max_temp,year,month,dayofyear)
     return {'demand': demand}
 
 @app.get("/predict/cases/{season}/{year}/{month}")
 async def predict_cases(season: str, year: int, month: int):
+    if month < 1 or month > 12:
+        raise HTTPException(status_code=400, detail="Month must be between 1-12")
+    elif year < 1900 or year > 2099:
+        raise HTTPException(status_code=400, detail="Year must be between 1900 - 2099")
+    
     cases = flu_model.predict(season,year,month)
     return {'cases': cases}
     
