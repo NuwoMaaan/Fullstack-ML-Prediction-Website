@@ -38,9 +38,14 @@ const PredictionPageTemp = () => {
             const { min_temp, max_temp } = response.data;
             setPredictedTemp({ min: min_temp, max: max_temp });
 
-            // Determine how many days in month
-            const daysInMonth = new Date(year, month, 0).getDate();
-            const days = [...Array(daysInMonth).keys()].map(i => i + 1);
+            //Gets a list on dates from the start date to t
+            const noOfDaysToPredict = 14;
+            const startDate = new Date(year, month - 1, day);
+            const days = [...Array(noOfDaysToPredict).keys()].map(i => {
+                const nextDate = new Date(startDate);
+                nextDate.setDate(startDate.getDate() + i);
+                return nextDate.getDate();
+            });
 
             // Fetch demand data using temperature predictions for each day of month
             const demandPredictions = await Promise.all(
@@ -118,8 +123,9 @@ const PredictionPageTemp = () => {
             if (err.response)
             {
                 setError(`Error: ${err.response.data.detail}`)
+                console.error(err.response.data.detail);
             }
-            console.error(err.response.data.detail);
+            console.error(err);
         } finally {
             setLoading(false);
         }
