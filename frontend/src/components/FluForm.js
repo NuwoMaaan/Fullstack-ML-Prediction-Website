@@ -9,17 +9,6 @@ const CasesForm = ({ season, setSeason, year, setYear, month, setMonth, loading,
                 <Grid item xs={12} sm={2}>
                     <TextField
                         fullWidth
-                        type="text"
-                        label="Season"
-                        variant="outlined"
-                        value={season}
-                        onChange={(e) => setSeason(e.target.value)}
-                        required
-                    />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                    <TextField
-                        fullWidth
                         type="number"
                         label="Year"
                         variant="outlined"

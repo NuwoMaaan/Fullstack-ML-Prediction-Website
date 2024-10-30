@@ -14,8 +14,20 @@ const theme = createTheme({
     },
 });
 
+const getSeason = (month) => {
+    if (month === 12 || month <= 2) {
+        return 'summer';
+    } else if (month >= 3 && month <= 5) {
+        return 'autumn';
+    } else if (month >= 6 && month <= 8) {
+        return 'winter';
+    } else {
+        return 'spring';
+    }
+};
+
 const PredictionPageCases = () => {
-    const [season, setSeason] = useState('');
+    //const [season, setSeason] = useState('');
     const [year, setYear] = useState('');
     const [month, setMonth] = useState('');
     const [predictedCases, setPredictedCases] = useState(null);
@@ -31,25 +43,35 @@ const PredictionPageCases = () => {
         
         try {
             // Get the total cases predicted for each month
-            const monthsInYear = [...Array(12).keys()].map(i => i + 1);
+            const noOfMonthsToPredict = 5;
+            const startDate = new Date(year, month, 0);
+            const months = [...Array(noOfMonthsToPredict).keys()].map(i => {
+                const nextDate = new Date(startDate);
+                nextDate.setMonth(startDate.getMonth() + i);
+                return nextDate.getMonth();
+            });
+
             const predictions = await Promise.all(
-                monthsInYear.map(month =>
-                    axios.get(`http://localhost:8000/predict/cases/${season}/${year}/${month}`)
-                        .then(res => res.data.cases) // Assuming the response contains monthly total case data
-                        .catch(err => {
-                            console.error(`Error fetching cases for month ${month}:`, err);
-                            return 0; 
-                        })
-                )
+                months.map(month => {
+                    const season = getSeason(month);
+                    return axios.get(`http://localhost:8000/predict/cases/${season}/${year}/${month}`)
+                    .then(res => {
+                        console.log(`Data for ${month}: `, res.data);
+                        return res.data.cases;
+                    });
+                })
             );
-    
+            
+            console.log(predictions);
             const monthNames = [
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ];
+
+            const predictedMonthNames = months.map(index => monthNames[index]);
     
             const newChartData = {
-                labels: monthNames, 
+                labels: predictedMonthNames, 
                 datasets: [
                     {
                         label: 'Predicted Flu Cases',
@@ -60,12 +82,16 @@ const PredictionPageCases = () => {
                     }
                 ]
             };
-    
+            
             setPredictedCases(predictions); 
             setChartData(newChartData); 
         } catch (err) {
-            setError('Error predicting Flu Cases. Please try again.');
-            console.error(err);
+            if (err.response)
+                {
+                    setError(`Error: ${err.response.data.detail}`)
+                    console.error(err.response.data.detail);
+                }
+                console.error(err);
         } finally {
             setLoading(false);
         }
@@ -81,8 +107,8 @@ const PredictionPageCases = () => {
                     </Typography>
                     <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
                         <CasesForm 
-                            season={season}
-                            setSeason={setSeason}
+                            //season={season}
+                            //setSeason={setSeason}
                             year={year} 
                             setYear={setYear} 
                             month={month} 
