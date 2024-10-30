@@ -45,7 +45,7 @@ const TemperatureResult = ({ predictedTemp, chartData }) => {
                     />
                     {chartData.demandData && (
     <Box sx={{ mt: 3 }}>
-        <h2>Predicted Electricity Demand</h2>
+        <h2>Predicted Electricity Demand from predicted temperatures</h2>
         <Line
             data={chartData.demandData}
             options={{

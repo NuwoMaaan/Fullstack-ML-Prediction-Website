@@ -34,7 +34,7 @@ const PredictionPageDemand = () => {
         setLoading(true);
         
         try {
-            const response = await axios.get(`http://localhost:8000/predict/${min_temp}/${max_temp}/${year}/${month}/${day}`); // Endpoint updated
+            const response = await axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`); // Endpoint updated
             const { demand } = response.data; // Assuming the response contains demand data
             setPredictedDemand(demand);
 
@@ -43,7 +43,7 @@ const PredictionPageDemand = () => {
 
             const predictions = await Promise.all(
                 days.map(day =>
-                    axios.get(`http://localhost:8000/predict/${min_temp}/${max_temp}/${year}/${month}/${day}`) // Endpoint updated
+                    axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`) // Endpoint updated
                         .then(res => res.data.demand) // Assuming the response contains demand data
                 )
             );
