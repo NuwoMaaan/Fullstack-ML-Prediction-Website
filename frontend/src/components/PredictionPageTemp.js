@@ -115,8 +115,11 @@ const PredictionPageTemp = () => {
             }));
             
         } catch (err) {
-            setError('Error predicting temperature. Please try again.');
-            console.error(err);
+            if (err.response)
+            {
+                setError(`Error: ${err.response.data.detail}`)
+            }
+            console.error(err.response.data.detail);
         } finally {
             setLoading(false);
         }
