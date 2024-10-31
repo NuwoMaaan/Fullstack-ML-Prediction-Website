@@ -27,7 +27,6 @@ const getSeason = (month) => {
 };
 
 const PredictionPageCases = () => {
-    //const [season, setSeason] = useState('');
     const [year, setYear] = useState('');
     const [month, setMonth] = useState('');
     const [predictedCases, setPredictedCases] = useState(null);
@@ -41,22 +40,35 @@ const PredictionPageCases = () => {
         setPredictedCases(null);
         setLoading(true);
         
+        const yearNum = parseInt(year, 10);
+        const monthNum = parseInt(month, 10);
+
+        if (yearNum < 1900 || yearNum > 2099) {
+            setError('Year must be between 1900 and 2099.');
+            setLoading(false);
+            return;
+        }
+        if (monthNum < 1 || monthNum > 12) {
+            setError('Month must be between 1 and 12.');
+            setLoading(false);
+            return;
+        }
+
         try {
-            // Get the total cases predicted for each month
             const noOfMonthsToPredict = 5;
-            const startDate = new Date(year, month, 0);
+            const startDate = new Date(yearNum, monthNum - 1, 1); // Month is 0-indexed in JS
             const months = [...Array(noOfMonthsToPredict).keys()].map(i => {
                 const nextDate = new Date(startDate);
                 nextDate.setMonth(startDate.getMonth() + i);
-                return nextDate.getMonth();
+                return nextDate.getMonth(); 
             });
 
             const predictions = await Promise.all(
                 months.map(month => {
-                    const season = getSeason(month);
-                    return axios.get(`http://localhost:8000/predict/cases/${season}/${year}/${month}`)
+                    const season = getSeason(month + 1); 
+                    return axios.get(`http://localhost:8000/predict/cases/${season}/${yearNum}/${month + 1}`)
                     .then(res => {
-                        console.log(`Data for ${month}: `, res.data);
+                        console.log(`Data for ${month + 1}: `, res.data);
                         return res.data.cases;
                     });
                 })
@@ -86,12 +98,11 @@ const PredictionPageCases = () => {
             setPredictedCases(predictions); 
             setChartData(newChartData); 
         } catch (err) {
-            if (err.response)
-                {
-                    setError(`Error: ${err.response.data.detail}`)
-                    console.error(err.response.data.detail);
-                }
-                console.error(err);
+            if (err.response) {
+                setError(`Error: ${err.response.data.detail}`);
+                console.error(err.response.data.detail);
+            }
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -107,8 +118,6 @@ const PredictionPageCases = () => {
                     </Typography>
                     <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
                         <CasesForm 
-                            //season={season}
-                            //setSeason={setSeason}
                             year={year} 
                             setYear={setYear} 
                             month={month} 

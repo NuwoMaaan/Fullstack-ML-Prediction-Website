@@ -6,8 +6,6 @@ import { Container, Typography, Paper, Box, ThemeProvider, createTheme } from '@
 import TemperatureForm from './TemperatureForm';
 import TemperatureResult from './TemperatureResult';
 
-
-
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const theme = createTheme({
@@ -26,19 +24,54 @@ const PredictionPageTemp = () => {
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const validateInputs = () => {
+        const yearNum = parseInt(year);
+        const monthNum = parseInt(month);
+        const dayNum = parseInt(day);
+
+        if (!year || !month || !day) {
+            setError('All inputs must be provided.');
+            return false;
+        }
+        if (yearNum < 1900 || yearNum > 2099) {
+            setError('Year must be between 1900 and 2099.');
+            return false;
+        }
+        if (monthNum < 1 || monthNum > 12) {
+            setError('Month must be between 1 and 12.');
+            return false;
+        }
+        if (dayNum < 1 || dayNum > 31) {
+            setError('Day must be between 1 and 31.');
+            return false;
+        }
+
+        // Check for valid days in each month
+        const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+        if (dayNum > daysInMonth) {
+            setError(`Month ${monthNum} does not have ${dayNum} days.`);
+            return false;
+        }
+
+        setError('');
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        
+        if (!validateInputs()) 
+            return; // Validate inputs before proceeding
+
         setPredictedTemp({ min: null, max: null });
         setLoading(true);
         
         try {
-            // Fetch min and max temp
+    
             const response = await axios.get(`http://localhost:8000/predict/temp/${year}/${month}/${day}`);
             const { min_temp, max_temp } = response.data;
             setPredictedTemp({ min: min_temp, max: max_temp });
 
-            //Gets a list on dates from the start date to t
             const noOfDaysToPredict = 14;
             const startDate = new Date(year, month - 1, day);
             const days = [...Array(noOfDaysToPredict).keys()].map(i => {
@@ -47,14 +80,14 @@ const PredictionPageTemp = () => {
                 return nextDate.getDate();
             });
 
-            // Fetch demand data using temperature predictions for each day of month
+        
             const demandPredictions = await Promise.all(
                 days.map(day =>
                     axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`)
                         .then(res => res.data.demand)
                 )
             );
-            // get prediction for each day of month
+    
             const predictions = await Promise.all(
                 days.map(day =>
                     axios.get(`http://localhost:8000/predict/temp/${year}/${month}/${day}`)
@@ -110,7 +143,6 @@ const PredictionPageTemp = () => {
                         backgroundColor: 'rgba(100, 100, 250, 0.5)',
                         tension: 0.1
                     },
-                    
                 ]
             };
 
@@ -120,9 +152,8 @@ const PredictionPageTemp = () => {
             }));
             
         } catch (err) {
-            if (err.response)
-            {
-                setError(`Error: ${err.response.data.detail}`)
+            if (err.response) {
+                setError(`Error: ${err.response.data.detail}`);
                 console.error(err.response.data.detail);
             }
             console.error(err);
@@ -131,7 +162,6 @@ const PredictionPageTemp = () => {
         }
     };
 
-    
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="md">
