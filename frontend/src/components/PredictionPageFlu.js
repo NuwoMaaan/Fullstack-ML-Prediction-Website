@@ -51,59 +51,58 @@ const getSeason = (month) => {
 };
 
 const PredictionPageCases = () => {
-  //const [season, setSeason] = useState('');
-  const [year, setYear] = useState("");
-  const [month, setMonth] = useState("");
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
   const [predictedCases, setPredictedCases] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setPredictedCases(null);
-    setLoading(true);
+      e.preventDefault();
+      setError('');
+      setPredictedCases(null);
+      setLoading(true);
+      
+      const yearNum = parseInt(year, 10);
+      const monthNum = parseInt(month, 10);
 
-    try {
-      // Get the total cases predicted for each month
-      const noOfMonthsToPredict = 5;
-      const startDate = new Date(year, month, 0);
-      const months = [...Array(noOfMonthsToPredict).keys()].map((i) => {
-        const nextDate = new Date(startDate);
-        nextDate.setMonth(startDate.getMonth() + i);
-        return nextDate.getMonth();
-      });
+      if (yearNum < 1900 || yearNum > 2099) {
+          setError('Year must be between 1900 and 2099.');
+          setLoading(false);
+          return;
+      }
+      if (monthNum < 1 || monthNum > 12) {
+          setError('Month must be between 1 and 12.');
+          setLoading(false);
+          return;
+      }
 
-      const predictions = await Promise.all(
-        months.map((month) => {
-          const season = getSeason(month);
-          return axios
-            .get(
-              `http://localhost:8000/predict/cases/${season}/${year}/${month}`
-            )
-            .then((res) => {
-              console.log(`Data for ${month}: `, res.data);
-              return res.data.cases;
-            });
-        })
-      );
+      try {
+          const noOfMonthsToPredict = 5;
+          const startDate = new Date(yearNum, monthNum - 1, 1); // Month is 0-indexed in JS
+          const months = [...Array(noOfMonthsToPredict).keys()].map(i => {
+              const nextDate = new Date(startDate);
+              nextDate.setMonth(startDate.getMonth() + i);
+              return nextDate.getMonth(); 
+          });
 
-      console.log(predictions);
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
+          const predictions = await Promise.all(
+              months.map(month => {
+                  const season = getSeason(month + 1); 
+                  return axios.get(`http://localhost:8000/predict/cases/${season}/${yearNum}/${month + 1}`)
+                  .then(res => {
+                      console.log(`Data for ${month + 1}: `, res.data);
+                      return res.data.cases;
+                  });
+              })
+          );
+          
+          console.log(predictions);
+          const monthNames = [
+              'January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December'
+          ];
 
       const predictedMonthNames = months.map((index) => monthNames[index]);
 

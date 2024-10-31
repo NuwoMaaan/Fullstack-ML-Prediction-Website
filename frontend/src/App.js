@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import PredictionPageTemp from "./components/PredictionPageTemp";
 import PredictionPageDemand from "./components/PredictionPageDemand";
 import PredictionPageCases from "./components/PredictionPageFlu";
@@ -16,6 +17,7 @@ import {
   Grid,
   Card,
   CardContent,
+  Mail,
   Button,
   Box,
   Drawer,
@@ -35,6 +37,7 @@ import {
   CircularProgress,
   LinearProgress,
   Chip,
+  TextField,
   Avatar,
   Divider,
 } from "@mui/material";
@@ -86,13 +89,16 @@ function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
   };
 
   const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
     setSnackbarOpen(false);
@@ -100,17 +106,38 @@ function App() {
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
+    setName('');
+    setEmail('');
+    setErrorMessage('');
   };
+
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
-  const handleSubmit = () => {
+
+  const handleSubmit = async () => {
+    if (!name || !email) {
+      setErrorMessage('Both fields are required.');
+      return;
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+  
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await axios.post(`http://localhost:8000/contact_us_emails/${name}/${email}`);
+      console.log(response.data); 
+      setSnackbarOpen(true); 
       handleDialogClose();
-      setSnackbarOpen(true);
-    }, 2000);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Failed to send your message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const drawerContent = (
@@ -181,6 +208,17 @@ function App() {
             }}
           />
         </ListItem>
+        <ListItem button onClick={handleDialogOpen}>
+            <ListItemIcon>
+              <MailIcon />
+            </ListItemIcon>
+            <ListItemText primary="Contact"
+            sx={{
+              color: "#293241",
+              "&:hover": { color: "#3d5a80" },
+            }} 
+          />
+        </ListItem>
       </List>
       <Divider />
     </Box>
@@ -228,6 +266,8 @@ function App() {
             <Button color="inherit" component={Link} to="/about">
               About Us
             </Button>
+            <Button color="inherit" onClick={handleDialogOpen}>Contact</Button>
+
           </Box>
 
           {/* Menu button only visible upon page resizing */}
@@ -320,8 +360,55 @@ function App() {
           </Typography>
         </Container>
       </Box>
+  
+    <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Your message has been sent!
+        </Alert>
+      </Snackbar>
+
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Contact Us</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Fill out this form to get in touch with us.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Your Name"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={!!errorMessage}
+            helperText={errorMessage}
+          />
+          <TextField
+            margin="dense"
+            label="Email Address"
+            type="email"
+            fullWidth
+            variant="standard"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!errorMessage}
+            helperText={errorMessage}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : 'Submit'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
+
   );
+
+  
 }
 
 export default App;

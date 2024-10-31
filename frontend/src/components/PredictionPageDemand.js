@@ -41,47 +41,78 @@ const theme = createTheme({
 });
 
 const PredictionPageDemand = () => {
-  const [min_temp, setminTemp] = useState("");
-  const [max_temp, setmaxTemp] = useState("");
-  const [year, setYear] = useState("");
-  const [month, setMonth] = useState("");
-  const [day, setDay] = useState("");
-  const [predictedDemand, setPredictedDemand] = useState(null); // Changed to hold demand
-  const [error, setError] = useState("");
+  const [min_temp, setminTemp] = useState('')
+  const [max_temp, setmaxTemp] = useState('')
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
+  const [day, setDay] = useState('');
+  const [predictedDemand, setPredictedDemand] = useState(null); 
+  const [error, setError] = useState('');
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const validateInputs = () => {
+      const yearNum = parseInt(year);
+      const monthNum = parseInt(month);
+      const dayNum = parseInt(day);
+
+      if (!year || !month || !day) {
+          setError('All inputs must be provided.');
+          return false;
+      }
+      if (yearNum < 1900 || yearNum > 2099) {
+          setError('Year must be between 1900 and 2099.');
+          return false;
+      }
+      if (monthNum < 1 || monthNum > 12) {
+          setError('Month must be between 1 and 12.');
+          return false;
+      }
+      if (dayNum < 1 || dayNum > 31) {
+          setError('Day must be between 1 and 31.');
+          return false;
+      }
+
+      // Check for valid days in each month
+      const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+      if (dayNum > daysInMonth) {
+          setError(`Month ${monthNum} does not have ${dayNum} days.`);
+          return false;
+      }
+
+      setError('');
+      return true;
+  };
+
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setPredictedDemand(null);
-    setLoading(true);
+      e.preventDefault();
+      if (!validateInputs()) 
+          return;
+      setPredictedDemand(null);
+      setLoading(true);
+      
+      try {
+          const response = await axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`); 
+          const { demand } = response.data; 
+          setPredictedDemand(demand);
 
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`
-      ); // Endpoint updated
-      const { demand } = response.data; // Assuming the response contains demand data
-      setPredictedDemand(demand);
+          const noOfDaysToPredict = 14;
+          const startDate = new Date(year, month - 1, day);
+          const days = [...Array(noOfDaysToPredict).keys()].map(i => {
+              const nextDate = new Date(startDate);
+              nextDate.setDate(startDate.getDate() + i);
+              return nextDate.getDate();
+          });
 
-      const noOfDaysToPredict = 14;
-      const startDate = new Date(year, month - 1, day);
-      const days = [...Array(noOfDaysToPredict).keys()].map((i) => {
-        const nextDate = new Date(startDate);
-        nextDate.setDate(startDate.getDate() + i);
-        return nextDate.getDate();
-      });
 
-      const predictions = await Promise.all(
-        days.map(
-          (day) =>
-            axios
-              .get(
-                `http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`
-              ) // Endpoint updated
-              .then((res) => res.data.demand) // Assuming the response contains demand data
-        )
-      );
+          const predictions = await Promise.all(
+              days.map(day =>
+                  axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`) 
+                      .then(res => res.data.demand) 
+              )
+          );
 
       const newChartData = {
         labels: days,
