@@ -77,7 +77,7 @@ function About() {
       </Box>
 
       <Routes>
-        {/* CARDS*/}
+        {/* ABOUT US CARDS*/}
         <Route path="/" element={<AboutCards />} />
       </Routes>
     </Container>
@@ -89,16 +89,16 @@ function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
   };
 
   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
@@ -106,9 +106,9 @@ function App() {
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
-    setName('');
-    setEmail('');
-    setErrorMessage('');
+    setName("");
+    setEmail("");
+    setErrorMessage("");
   };
 
   const handleDialogClose = () => {
@@ -117,24 +117,26 @@ function App() {
 
   const handleSubmit = async () => {
     if (!name || !email) {
-      setErrorMessage('Both fields are required.');
+      setErrorMessage("Both fields are required.");
       return;
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-      setErrorMessage('Please enter a valid email address.');
+      setErrorMessage("Please enter a valid email address.");
       return;
     }
-  
+
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:8000/contact_us_emails/${name}/${email}`);
-      console.log(response.data); 
-      setSnackbarOpen(true); 
+      const response = await axios.post(
+        `http://localhost:8000/contact_us_emails/${name}/${email}`
+      );
+      console.log(response.data);
+      setSnackbarOpen(true);
       handleDialogClose();
     } catch (error) {
       console.error(error);
-      setErrorMessage('Failed to send your message. Please try again.');
+      setErrorMessage("Failed to send your message. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -209,14 +211,15 @@ function App() {
           />
         </ListItem>
         <ListItem button onClick={handleDialogOpen}>
-            <ListItemIcon>
-              <MailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Contact"
+          <ListItemIcon>
+            <MailIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary="Contact"
             sx={{
               color: "#293241",
               "&:hover": { color: "#3d5a80" },
-            }} 
+            }}
           />
         </ListItem>
       </List>
@@ -236,17 +239,29 @@ function App() {
     >
       <AppBar position="static" sx={{ bgcolor: "#293241" }}>
         <Toolbar sx={{ py: 1 }}>
-          {/* Title on the left */}
-          <Typography variant="h4" sx={{ flexGrow: 1 }}>
+          {/* LOGO ON THE LEFT */}
+          <Typography variant="h4" sx={{ flexGrow: 1, ml: 2 }}>
             weatherml
           </Typography>
 
-          {/* Navigation buttons - visible on medium screens and up */}
+          {/* NAV BUTTONS - MEDIUM SCREENS & UP */}
           <Box sx={{ display: { xs: "none", lg: "flex" }, gap: 2 }}>
-            <Button color="inherit" component={Link} to="/">
+            <Button
+              sx={{
+                bgcolor: "#293241",
+                "&:hover": { bgcolor: "#98c1d9" },
+              }}
+              color="inherit"
+              component={Link}
+              to="/"
+            >
               Home
             </Button>
             <Button
+              sx={{
+                bgcolor: "#293241",
+                "&:hover": { bgcolor: "#98c1d9" },
+              }}
               color="inherit"
               component={Link}
               to="/temperatureprediction"
@@ -254,23 +269,51 @@ function App() {
               Weather Prediction
             </Button>
             <Button
+              sx={{
+                bgcolor: "#293241",
+                "&:hover": { bgcolor: "#98c1d9" },
+              }}
               color="inherit"
               component={Link}
               to="/electricityprediction"
             >
               Electricity Prediction
             </Button>
-            <Button color="inherit" component={Link} to="/influenzaprediction">
+            <Button
+              sx={{
+                bgcolor: "#293241",
+                "&:hover": { bgcolor: "#98c1d9" },
+              }}
+              color="inherit"
+              component={Link}
+              to="/influenzaprediction"
+            >
               Influenza Prediction
             </Button>
-            <Button color="inherit" component={Link} to="/about">
+            <Button
+              sx={{
+                bgcolor: "#293241",
+                "&:hover": { bgcolor: "#98c1d9" },
+              }}
+              color="inherit"
+              component={Link}
+              to="/about"
+            >
               About Us
             </Button>
-            <Button color="inherit" onClick={handleDialogOpen}>Contact</Button>
-
+            <Button
+              sx={{
+                bgcolor: "#293241",
+                "&:hover": { bgcolor: "#98c1d9" },
+              }}
+              color="inherit"
+              onClick={handleDialogOpen}
+            >
+              Contact
+            </Button>
           </Box>
 
-          {/* Menu button only visible upon page resizing */}
+          {/* MENU DRAWER - VISIBLE ON SMALL SCREENS */}
           <IconButton
             edge="end"
             color="inherit"
@@ -316,7 +359,7 @@ function App() {
               </Box>
 
               <Routes>
-                {/* CARDS*/}
+                {/* CARDS */}
                 <Route path="/" element={<PredictionCards />} />
                 <Route
                   path="/temperatureprediction"
@@ -360,9 +403,17 @@ function App() {
           </Typography>
         </Container>
       </Box>
-  
-    <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           Your message has been sent!
         </Alert>
       </Snackbar>
@@ -398,17 +449,29 @@ function App() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Submit'}
+          <Button
+            sx={{
+              color: "#293241",
+              "&:hover": { color: "#3d5a80" },
+            }}
+            onClick={handleDialogClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            sx={{
+              color: "#293241",
+              "&:hover": { color: "#3d5a80" },
+            }}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} /> : "Submit"}
           </Button>
         </DialogActions>
       </Dialog>
     </Box>
-
   );
-
-  
 }
 
 export default App;
