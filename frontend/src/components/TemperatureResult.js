@@ -32,7 +32,8 @@ const TemperatureResult = ({ predictedTemp, chartData }) => {
                                     title: {
                                         display: true,
                                         text: 'Day of Month'
-                                    }
+                                    },
+                                    stacked: true,
                                 },
                                 y: {
                                     title: {
