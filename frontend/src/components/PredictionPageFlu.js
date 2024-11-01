@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Container, Typography, Paper, Box, ThemeProvider, createTheme } from '@mui/material';
 import CasesForm from './FluForm';  // Form component for flu cases
 import CasesResult from './FluResult';  // Result component for flu cases
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement);
 
 const theme = createTheme({
     palette: {
@@ -88,9 +88,15 @@ const PredictionPageCases = () => {
                     {
                         label: 'Predicted Flu Cases',
                         data: predictions,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                        tension: 0.1
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)', 
+                            'rgba(255, 206, 86, 0.5)', 
+                            'rgba(153, 102, 255, 0.5)', 
+                            'rgba(255, 159, 64, 0.5)', 
+                        ],
+                        hoverOffset: 20
                     }
                 ]
             };
