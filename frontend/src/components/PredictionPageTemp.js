@@ -120,8 +120,8 @@ const PredictionPageTemp = () => {
             .then(res => ({ min: res.data.min_temp, max: res.data.max_temp }))
         )
       );
-
-      const newCharData = {
+      
+      const newChartData = {
                 labels: days,
                 datasets: [
                     {
