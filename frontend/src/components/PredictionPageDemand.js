@@ -115,26 +115,30 @@ const PredictionPageDemand = () => {
           );
 
       const newChartData = {
-        labels: days,
-        datasets: [
-          {
-            label: "Electricity Demand",
-            data: predictions,
-            borderColor: "rgb(75, 192, 192)",
-            backgroundColor: "rgba(75, 192, 192, 0.5)",
-            tension: 0.1,
-          },
-          {
-            label: "Prediction",
-            data: [{ x: parseInt(day), y: demand }],
-            borderColor: "rgb(0, 255, 0)",
-            backgroundColor: "rgba(0, 255, 255, 0.5)",
-            pointRadius: 8,
-            pointHoverRadius: 12,
-            showLine: false,
-          },
-        ],
-      };
+                labels: days,
+                datasets: [
+                    {
+                        label: 'Electricity Demand',
+                        data: predictions,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                        borderWidth: 3, 
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'Prediction',
+                        data: [{ x: parseInt(day), y: demand }],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        pointRadius: 8,
+                        pointHoverRadius: 12,
+                        showLine: false,
+                        borderWidth: 2,
+                    }
+                ]
+            };
 
       setChartData(newChartData);
     } catch (err) {

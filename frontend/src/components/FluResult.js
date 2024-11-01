@@ -1,7 +1,7 @@
 // CasesResult.js
 import React from 'react';
 import { Typography, Paper, Box } from '@mui/material';
-import { Line } from 'react-chartjs-2';
+import { Pie } from 'react-chartjs-2';
 
 const CasesResult = ({ predictedCases, chartData }) => {
     return (
@@ -11,31 +11,34 @@ const CasesResult = ({ predictedCases, chartData }) => {
             </Typography>
             {chartData && (
                 <Box sx={{ mt: 3 }}>
-                    <Line
+                    <Pie
                         data={chartData}
                         options={{
                             responsive: true,
                             plugins: {
                                 legend: {
                                     position: 'top',
+                                    labels: {
+                                        boxWidth: 20,
+                                        padding: 15,
+                                    }
                                 },
                                 title: {
                                     display: true,
                                     text: 'Flu Cases Predictions'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                                        }
+                                    }
                                 }
                             },
-                            scales: {
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Month'
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: 'Predicted Cases'
-                                    }
+                            hover: {
+                                onHover: (event, chartElement) => {
+                                    const canvas = event.native.target;
+                                    canvas.style.cursor = chartElement.length ? 'pointer' : 'default';
                                 }
                             }
                         }}

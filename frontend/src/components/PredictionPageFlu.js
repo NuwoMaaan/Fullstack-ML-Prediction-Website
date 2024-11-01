@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -9,6 +10,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement
 } from "chart.js";
 import {
   Container,
@@ -28,8 +30,10 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
+
 
 const theme = createTheme({
   palette: {
@@ -106,18 +110,25 @@ const PredictionPageCases = () => {
 
       const predictedMonthNames = months.map((index) => monthNames[index]);
 
-      const newChartData = {
-        labels: predictedMonthNames,
-        datasets: [
-          {
-            label: "Predicted Flu Cases",
-            data: predictions,
-            borderColor: "rgb(75, 192, 192)",
-            backgroundColor: "rgba(75, 192, 192, 0.5)",
-            tension: 0.1,
-          },
-        ],
-      };
+
+       const newChartData = {
+                labels: predictedMonthNames, 
+                datasets: [
+                    {
+                        label: 'Predicted Flu Cases',
+                        data: predictions,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)', 
+                            'rgba(255, 206, 86, 0.5)', 
+                            'rgba(153, 102, 255, 0.5)', 
+                            'rgba(255, 159, 64, 0.5)', 
+                        ],
+                        hoverOffset: 20
+                    }
+                ]
+            };
 
       setPredictedCases(predictions);
       setChartData(newChartData);
@@ -131,6 +142,7 @@ const PredictionPageCases = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <ThemeProvider theme={theme}>

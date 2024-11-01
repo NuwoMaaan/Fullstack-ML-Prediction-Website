@@ -1,4 +1,5 @@
 // PredictionPage.js
+
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -6,6 +7,8 @@ import {
   CategoryScale,
   LinearScale,
   PointElement,
+  BarElement,
+  ScatterController,
   LineElement,
   Title,
   Tooltip,
@@ -26,11 +29,14 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
+  BarElement,
+  ScatterController,
   LineElement,
   Title,
   Tooltip,
   Legend
 );
+
 
 const theme = createTheme({
   palette: {
@@ -115,43 +121,51 @@ const PredictionPageTemp = () => {
         )
       );
 
-      const newChartData = {
-        labels: days,
-        datasets: [
-          {
-            label: "Min Temperatures",
-            data: predictions.map((p) => p.min),
-            borderColor: "rgb(75, 192, 192)",
-            backgroundColor: "rgba(75, 192, 192, 0.5)",
-            tension: 0.1,
-          },
-          {
-            label: "Max Temperatures",
-            data: predictions.map((p) => p.max),
-            borderColor: "rgb(255, 99, 132)",
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-            tension: 0.1,
-          },
-          {
-            label: "Prediction Min",
-            data: [{ x: parseInt(day), y: min_temp }],
-            borderColor: "rgb(0, 255, 0)",
-            backgroundColor: "rgba(0, 255, 255, 0.5)",
-            pointRadius: 8,
-            pointHoverRadius: 12,
-            showLine: false,
-          },
-          {
-            label: "Prediction Max",
-            data: [{ x: parseInt(day), y: max_temp }],
-            borderColor: "rgb(255, 255, 0)",
-            backgroundColor: "rgba(255, 255, 0, 0.5)",
-            pointRadius: 8,
-            pointHoverRadius: 12,
-            showLine: false,
-          },
-        ],
-      };
+      const newCharData = {
+                labels: days,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Min Temperatures',
+                        data: predictions.map(p => p.min),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        tension: 0.1,
+                        order: 2
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Max Temperatures',
+                        data: predictions.map(p => p.max),
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        tension: 0.1,
+                        order: 2
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Prediction Min',
+                        data: [{ x: parseInt(day), y: min_temp }],
+                        borderColor: 'rgb(0, 255, 0)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        pointRadius: 8,
+                        pointHoverRadius: 12,
+                        showLine: false,
+                        order: 1
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Prediction Max',
+                        data: [{ x: parseInt(day), y: max_temp }],
+                        borderColor: 'rgb(255, 255, 0)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        pointRadius: 8,
+                        pointHoverRadius: 12,
+                        showLine: false,
+                        order: 1
+                    }
+                ]
+            };
       setChartData(newChartData);
 
       const demandChartData = {
@@ -235,6 +249,7 @@ const PredictionPageTemp = () => {
       </Container>
     </ThemeProvider>
   );
+
 };
 
 export default PredictionPageTemp;
