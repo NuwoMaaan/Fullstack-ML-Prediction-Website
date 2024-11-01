@@ -41,104 +41,118 @@ const theme = createTheme({
 });
 
 const PredictionPageDemand = () => {
-  const [min_temp, setminTemp] = useState('')
-  const [max_temp, setmaxTemp] = useState('')
-  const [year, setYear] = useState('');
-  const [month, setMonth] = useState('');
-  const [day, setDay] = useState('');
-  const [predictedDemand, setPredictedDemand] = useState(null); 
-  const [error, setError] = useState('');
+  const [min_temp, setminTemp] = useState("");
+  const [max_temp, setmaxTemp] = useState("");
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
+  const [predictedDemand, setPredictedDemand] = useState(null);
+  const [error, setError] = useState("");
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const validateInputs = () => {
-      const yearNum = parseInt(year);
-      const monthNum = parseInt(month);
-      const dayNum = parseInt(day);
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+    const dayNum = parseInt(day);
 
-      if (!year || !month || !day) {
-          setError('All inputs must be provided.');
-          return false;
-      }
-      if (yearNum < 1900 || yearNum > 2099) {
-          setError('Year must be between 1900 and 2099.');
-          return false;
-      }
-      if (monthNum < 1 || monthNum > 12) {
-          setError('Month must be between 1 and 12.');
-          return false;
-      }
-      if (dayNum < 1 || dayNum > 31) {
-          setError('Day must be between 1 and 31.');
-          return false;
-      }
+    if (!year || !month || !day) {
+      setError("All inputs must be provided.");
+      return false;
+    }
+    if (yearNum < 1900 || yearNum > 2099) {
+      setError("Year must be between 1900 and 2099.");
+      return false;
+    }
+    if (monthNum < 1 || monthNum > 12) {
+      setError("Month must be between 1 and 12.");
+      return false;
+    }
+    if (dayNum < 1 || dayNum > 31) {
+      setError("Day must be between 1 and 31.");
+      return false;
+    }
 
-      // Check for valid days in each month
-      const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
-      if (dayNum > daysInMonth) {
-          setError(`Month ${monthNum} does not have ${dayNum} days.`);
-          return false;
-      }
+    // Check for valid days in each month
+    const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+    if (dayNum > daysInMonth) {
+      setError(`Month ${monthNum} does not have ${dayNum} days.`);
+      return false;
+    }
 
-      setError('');
-      return true;
+    if (max_temp < -10 || max_temp > 50) {
+      setError("Max Temp. must be between -10-50.");
+      return false;
+    }
+    if (min_temp < -10 || min_temp > 50) {
+      setError("Min Temp. must be between -10-50.");
+      return false;
+    }
+    if (max_temp < min_temp) {
+      setError("Min Temp. cannot be higher than Max Temp.");
+      return false;
+    }
+
+    setError("");
+    return true;
   };
 
-
-
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!validateInputs()) 
-          return;
-      setPredictedDemand(null);
-      setLoading(true);
-      
-      try {
-          const response = await axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`); 
-          const { demand } = response.data; 
-          setPredictedDemand(demand);
+    e.preventDefault();
+    if (!validateInputs()) return;
+    setPredictedDemand(null);
+    setLoading(true);
 
-          const noOfDaysToPredict = 14;
-          const startDate = new Date(year, month - 1, day);
-          const days = [...Array(noOfDaysToPredict).keys()].map(i => {
-              const nextDate = new Date(startDate);
-              nextDate.setDate(startDate.getDate() + i);
-              return nextDate.getDate();
-          });
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`
+      );
+      const { demand } = response.data;
+      setPredictedDemand(demand);
 
+      const noOfDaysToPredict = 14;
+      const startDate = new Date(year, month - 1, day);
+      const days = [...Array(noOfDaysToPredict).keys()].map((i) => {
+        const nextDate = new Date(startDate);
+        nextDate.setDate(startDate.getDate() + i);
+        return nextDate.getDate();
+      });
 
-          const predictions = await Promise.all(
-              days.map(day =>
-                  axios.get(`http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`) 
-                      .then(res => res.data.demand) 
-              )
-          );
+      const predictions = await Promise.all(
+        days.map((day) =>
+          axios
+            .get(
+              `http://localhost:8000/predict/demand/${min_temp}/${max_temp}/${year}/${month}/${day}`
+            )
+            .then((res) => res.data.demand)
+        )
+      );
 
       const newChartData = {
-                labels: days,
-                datasets: [
-                    {
-                        label: 'Electricity Demand',
-                        data: predictions,
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.3)',
-                        borderWidth: 3, 
-                        pointRadius: 5,
-                        pointHoverRadius: 8,
-                        tension: 0.3,
-                    },
-                    {
-                        label: 'Prediction',
-                        data: [{ x: parseInt(day), y: demand }],
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                        pointRadius: 8,
-                        pointHoverRadius: 12,
-                        showLine: false,
-                        borderWidth: 2,
-                    }
-                ]
-            };
+        labels: days,
+        datasets: [
+          {
+            label: "Electricity Demand",
+            data: predictions,
+            borderColor: "rgba(54, 162, 235, 1)",
+            backgroundColor: "rgba(54, 162, 235, 0.3)",
+            borderWidth: 3,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            tension: 0.3,
+          },
+          {
+            label: "Prediction",
+            data: [{ x: parseInt(day), y: demand }],
+            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 99, 132, 0.5)",
+            pointRadius: 8,
+            pointHoverRadius: 12,
+            showLine: false,
+            borderWidth: 2,
+          },
+        ],
+      };
 
       setChartData(newChartData);
     } catch (err) {

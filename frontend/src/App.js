@@ -394,9 +394,33 @@ function App() {
           mt: "auto",
         }}
       >
-        <Container maxWidth="lg">
-          <Typography variant="body1">weatherml</Typography>
-          <Typography variant="body2">
+        <Container
+          maxWidth="lg"
+          sx={{
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              mb: 1,
+            }}
+          >
+            weatherml
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              mb: 1,
+            }}
+          >
             {"Copyright © "}
             {new Date().getFullYear()}
             {"."}
