@@ -1,47 +1,69 @@
 // DemandForm.js
-import React from 'react';
-import { TextField, Button, Grid, CircularProgress } from '@mui/material';
+import React from "react";
+import { TextField, Button, Grid, CircularProgress } from "@mui/material";
 
-const CasesForm = ({ season, setSeason, year, setYear, month, setMonth, loading, onSubmit }) => {
-    return (
-        <form onSubmit={onSubmit}>
-            <Grid container spacing={2}>
-                <Grid item xs={12} sm={2}>
-                    <TextField
-                        fullWidth
-                        type="number"
-                        label="Year"
-                        variant="outlined"
-                        value={year}
-                        onChange={(e) => setYear(e.target.value)}
-                        required
-                    />
-                </Grid>
-                <Grid item xs={12} sm={2}>
-                    <TextField
-                        fullWidth
-                        type="number"
-                        label="Month"
-                        variant="outlined"
-                        value={month}
-                        onChange={(e) => setMonth(e.target.value)}
-                        required
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        disabled={loading}
-                    >
-                        {loading ? <CircularProgress size={24} /> : 'Predict Demand'}
-                    </Button>
-                </Grid>
-            </Grid>
-        </form>
-    );
+const CasesForm = ({
+  season,
+  setSeason,
+  year,
+  setYear,
+  month,
+  setMonth,
+  loading,
+  onSubmit,
+}) => {
+  return (
+    <form onSubmit={onSubmit}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={2}>
+          <TextField
+            fullWidth
+            type="number"
+            label="Year"
+            variant="outlined"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            required
+          />
+        </Grid>
+        <Grid item xs={12} sm={2}>
+          <TextField
+            fullWidth
+            type="number"
+            label="Month"
+            variant="outlined"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            required
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={loading}
+            sx={{
+              bgcolor: "#293241",
+              "&:hover": { bgcolor: "#98c1d9" },
+            }}
+          >
+            {loading ? (
+              <CircularProgress
+                size={24}
+                sx={{
+                  color: "#293241",
+                }}
+              />
+            ) : (
+              "Predict"
+            )}
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
+  );
 };
 
 export default CasesForm;
