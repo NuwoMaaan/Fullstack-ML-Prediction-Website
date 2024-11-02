@@ -91,7 +91,7 @@ async def add_email(name: str, email: str):
     new_contact.Emaildict['email'] = email
     new_contact.AddEmail()
 
-@app.get("/contact_us_emails/{name}/{email}")
+@app.get("/contact_us_emails/")
 async def get_emails():
     return {'contact_list': ContactList}
 
