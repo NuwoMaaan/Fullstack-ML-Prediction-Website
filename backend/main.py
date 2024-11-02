@@ -63,9 +63,9 @@ async def predict_demand(min_temp: float, max_temp: float, year: int, month: int
     elif year < 1900 or year > 2099:
         raise HTTPException(status_code=400, detail="Year must be between 1900 - 2099")
     elif (min_temp < -10 or min_temp > 50):
-        raise HTTPException(status_code=400, detail="Max temperature must be between -10 and 50")
+        raise HTTPException(status_code=400, detail="Max temperature must be between -10°C and 50°C")
     elif (max_temp < -10 or  max_temp > 50):
-        raise HTTPException(status_code=400, detail="Max temperature must be between -10 and 50")
+        raise HTTPException(status_code=400, detail="Max temperature must be between -10°C and 50°C")
     #Error Handling
     
     demand = demand_model.predict(min_temp,max_temp,year,month,dayofyear)

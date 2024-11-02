@@ -83,11 +83,11 @@ const PredictionPageDemand = () => {
     }
 
     if (max_temp < -10 || max_temp > 50) {
-      setError("Max Temp. must be between -10-50.");
+      setError("Max Temp. must be between -10°C - 50°C.");
       return false;
     }
     if (min_temp < -10 || min_temp > 50) {
-      setError("Min Temp. must be between -10-50.");
+      setError("Min Temp. must be between -10°C - 50°C.");
       return false;
     }
     if (max_temp < min_temp) {
