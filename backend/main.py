@@ -74,8 +74,10 @@ async def predict_demand(min_temp: float, max_temp: float, year: int, month: int
 @app.get("/predict/cases/{season}/{year}/{month}")
 async def predict_cases(season: str, year: int, month: int):
 
-    #Error Handling    
-    if month < 1 or month > 12:
+    #Error Handling 
+    if season != 'summer' and season != 'winter' and season != 'autumn' and season != 'spring':
+        raise HTTPException(status_code=400, detail="Season must be one of: summer, autumn, winter or spring")   
+    elif month < 1 or month > 12:
         raise HTTPException(status_code=400, detail="Month must be between 1-12")
     elif year < 1900 or year > 2099:
         raise HTTPException(status_code=400, detail="Year must be between 1900 - 2099")
