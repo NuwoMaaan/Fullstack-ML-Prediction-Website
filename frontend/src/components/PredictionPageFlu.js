@@ -83,8 +83,14 @@ const PredictionPageCases = () => {
       }
 
       try {
+
+          //Set the number of months to predict
           const noOfMonthsToPredict = 5;
+
+          //Set the start date (The users date input)
           const startDate = new Date(yearNum, monthNum - 1, 1); // Month is 0-indexed in JS
+
+          //Fill the months array with a list of months starting from the start date.
           const months = [...Array(noOfMonthsToPredict).keys()].map(i => {
               const nextDate = new Date(startDate);
               nextDate.setMonth(startDate.getMonth() + i);
@@ -108,12 +114,15 @@ const PredictionPageCases = () => {
               'July', 'August', 'September', 'October', 'November', 'December'
           ];
 
-      const predictedMonthNames = months.map((index) => monthNames[index]);
+          //Fill the predictedMonthNames with the months that are being predicted.
+          //This is used for the labels to present in the chart below.
+          const predictedMonthNames = months.map((index) => monthNames[index]);
 
 
-       const newChartData = {
+          const newChartData = {
                 labels: predictedMonthNames, 
                 datasets: [
+                    //Cases pie chart
                     {
                         label: 'Predicted Flu Cases',
                         data: predictions,
@@ -133,6 +142,7 @@ const PredictionPageCases = () => {
       setPredictedCases(predictions);
       setChartData(newChartData);
     } catch (err) {
+      //If there is an error, get the error detail and display to user, as well as, log in the console.
       if (err.response) {
         setError(`Error: ${err.response.data.detail}`);
         console.error(err.response.data.detail);

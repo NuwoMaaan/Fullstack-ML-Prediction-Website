@@ -51,6 +51,8 @@ const PredictionPageDemand = () => {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+
+  //Input Validation
   const validateInputs = () => {
     const yearNum = parseInt(year);
     const monthNum = parseInt(month);
@@ -96,6 +98,7 @@ const PredictionPageDemand = () => {
     setError("");
     return true;
   };
+  //Input Validation
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,8 +113,13 @@ const PredictionPageDemand = () => {
       const { demand } = response.data;
       setPredictedDemand(demand);
 
+      //Specify the amount of days to predict data for
       const noOfDaysToPredict = 14;
+
+      //Set the start date (The users date input)
       const startDate = new Date(year, month - 1, day);
+
+      //Fill the 'days' array with a list of dates starting from the start date.
       const days = [...Array(noOfDaysToPredict).keys()].map((i) => {
         const nextDate = new Date(startDate);
         nextDate.setDate(startDate.getDate() + i);
@@ -131,6 +139,7 @@ const PredictionPageDemand = () => {
       const newChartData = {
         labels: days,
         datasets: [
+          //Demand chart
           {
             label: "Electricity Demand",
             data: predictions,
@@ -141,6 +150,7 @@ const PredictionPageDemand = () => {
             pointHoverRadius: 8,
             tension: 0.3,
           },
+          //Prediction point
           {
             label: "Prediction",
             data: [{ x: parseInt(day), y: demand }],
@@ -156,6 +166,7 @@ const PredictionPageDemand = () => {
 
       setChartData(newChartData);
     } catch (err) {
+      //If there is an error, get the error detail and display to user, as well as, log in the console.
       if (err.response) {
         setError(`Error: ${err.response.data.detail}`);
         console.error(err.response.data.detail);

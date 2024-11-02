@@ -99,8 +99,14 @@ const PredictionPageTemp = () => {
       const { min_temp, max_temp } = response.data;
       setPredictedTemp({ min: min_temp, max: max_temp });
 
+
+      //Specify the amount of days to predict data for
       const noOfDaysToPredict = 14;
+
+      //Set the start date (The users date input)
       const startDate = new Date(year, month - 1, day);
+
+      //Fill the 'days' array with a list of dates starting from the start date.
       const days = [...Array(noOfDaysToPredict).keys()].map((i) => {
         const nextDate = new Date(startDate);
         nextDate.setDate(startDate.getDate() + i);
@@ -128,6 +134,7 @@ const PredictionPageTemp = () => {
       const newChartData = {
         labels: days,
         datasets: [
+          //Bar chart for min temps
           {
             type: "bar",
             label: "Min Temperatures",
@@ -137,6 +144,7 @@ const PredictionPageTemp = () => {
             tension: 0.1,
             order: 2,
           },
+          //Bar chart for max temps
           {
             type: "bar",
             label: "Max Temperatures",
@@ -146,6 +154,7 @@ const PredictionPageTemp = () => {
             tension: 0.1,
             order: 2,
           },
+          //Bar chart for predicted min temp. This overlaps the bar on the first date of the chart.
           {
             type: "bar",
             label: "Prediction Min",
@@ -157,6 +166,7 @@ const PredictionPageTemp = () => {
             showLine: false,
             order: 1,
           },
+          //Bar chart for predicted max temp. This overlaps the bar on the first date of the chart.
           {
             type: "bar",
             label: "Prediction Max",
@@ -191,6 +201,7 @@ const PredictionPageTemp = () => {
       }));
     } catch (err) {
       if (err.response) {
+        //If there is an error, get the error detail and display to user, as well as, log in the console.
         setError(`Error: ${err.response.data.detail}`);
         console.error(err.response.data.detail);
       }
