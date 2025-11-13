@@ -70,4 +70,3 @@ class FluModel():
 if __name__ == "__main__":
     model = FluModel()
     model.train()
-    print(model.predict('winter', 2022, 12,))

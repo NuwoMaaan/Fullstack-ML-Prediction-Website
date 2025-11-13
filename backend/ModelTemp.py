@@ -57,7 +57,7 @@ class TempModel():
         min_mae = mean_absolute_error(Y_Min, predictions)
         min_r2 = r2_score(Y_Min, predictions)
         print(f"Model trained. mae: {min_mae}, R²: {min_r2}")
-        joblib.dump(self.MinModel, 'MinModel.pkl')
+        joblib.dump(self.MinModel, './pklfiles/MinModel.pkl')
         # ----------------------------MIN TEMPERATURE-------------------------------#
 
         # ----------------------------MAX TEMPERATURE-------------------------------#
