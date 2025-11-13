@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from ModelTemp import TempModel
 from DemandModel import DemandModel
 from FluModel import FluModel
+import uvicorn
 
 app = FastAPI()
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # URL of React application
+    allow_origins=["http://localhost:3000"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -98,5 +98,4 @@ async def get_emails():
     return {'contact_list': ContactList}
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=3000)
