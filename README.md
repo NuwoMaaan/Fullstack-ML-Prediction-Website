@@ -7,16 +7,10 @@ What it does
 - Predicts daily min/max temperature, electricity demand, and influenza cases using pre-trained models in `backend`.
 - Exposes simple REST endpoints the frontend consumes.
 
-Prerequisites
-- Windows PowerShell (examples below). Python 3.11+ and Node.js (for frontend).
-
-Backend (Python)
-- From the `backend` folder you can use the provided virtual environment or create one:
-
 ```powershell
 # (from project root)
 cd .\backend
-# create venv (if you don't have it)
+# create venv 
 python -m venv venv
 .\venv\Scripts\Activate
 python -m pip install --upgrade pip
